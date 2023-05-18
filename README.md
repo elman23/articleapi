@@ -27,6 +27,6 @@ Create a `.env` file in the home of the project. The content is:
 POSTGRES_USER=myuser
 POSTGRES_PASSWORD=mypassword
 POSTGRES_DB=articlesDB
-PGADMIN_DEFAULT_EMAIL: user@domain.com
-PGADMIN_DEFAULT_PASSWORD: password
+PGADMIN_DEFAULT_EMAIL=user@domain.com
+PGADMIN_DEFAULT_PASSWORD=password
 ```
