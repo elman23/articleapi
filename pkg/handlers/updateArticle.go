@@ -11,7 +11,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func UpdateArticle(w http.ResponseWriter, r *http.Request) {
+func (h handler) UpdateArticle(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 

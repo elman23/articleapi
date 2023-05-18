@@ -11,7 +11,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func AddArticle(w http.ResponseWriter, r *http.Request) {
+func (h handler) AddArticle(w http.ResponseWriter, r *http.Request) {
 	// Read the request body
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)

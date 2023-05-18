@@ -8,7 +8,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func GetArticle(w http.ResponseWriter, r *http.Request) {
+func (h handler) GetArticle(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 

@@ -8,7 +8,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func DeleteArticle(w http.ResponseWriter, r *http.Request) {
+func (h handler) DeleteArticle(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
