@@ -1,10 +1,13 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
+	"github.com/elman23/articleapi/pkg/db"
 	"github.com/elman23/articleapi/pkg/handlers"
 	"github.com/gorilla/mux"
 )
@@ -14,18 +17,28 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Article REST API.")
 }
 
-func handleRequests() {
+func handleRequests(DB *sql.DB) {
+	// DB handler
+	h := handlers.New(DB)
 	// Create a new instance of the mux router.
 	myRouter := mux.NewRouter().StrictSlash(true)
 	myRouter.HandleFunc("/", homePage)
-	myRouter.HandleFunc("/articles", handlers.GetAllArticles).Methods(http.MethodGet)
-	myRouter.HandleFunc("/articles/{id}", handlers.GetArticle).Methods(http.MethodGet)
-	myRouter.HandleFunc("/articles", handlers.AddArticle).Methods(http.MethodPost)
-	myRouter.HandleFunc("/articles/{id}", handlers.UpdateArticle).Methods(http.MethodPut)
-	myRouter.HandleFunc("/articles/{id}", handlers.DeleteArticle).Methods(http.MethodDelete)
+	myRouter.HandleFunc("/articles", h.GetAllArticles).Methods(http.MethodGet)
+	myRouter.HandleFunc("/articles/{id}", h.GetArticle).Methods(http.MethodGet)
+	myRouter.HandleFunc("/articles", h.AddArticle).Methods(http.MethodPost)
+	myRouter.HandleFunc("/articles/{id}", h.UpdateArticle).Methods(http.MethodPut)
+	myRouter.HandleFunc("/articles/{id}", h.DeleteArticle).Methods(http.MethodDelete)
 	log.Fatal(http.ListenAndServe(":8080", myRouter))
 }
 
 func main() {
-	handleRequests()
+	user, password, dbname :=
+		os.Getenv("POSTGRES_USER"),
+		os.Getenv("POSTGRES_PASSWORD"),
+		os.Getenv("POSTGRES_DB")
+
+	DB := db.Connect(user, password, dbname)
+	db.CreateTable(DB)
+	handleRequests(DB)
+	db.CloseConnection(DB)
 }
