@@ -7,16 +7,13 @@ services:
       - "5432:5432"
     volumes:
       - ./database:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=articlesDB
-      - POSTGRES_USER=elman23
-      - POSTGRES_PASSWORD=password
+    env_file:
+      - .env
   pgadmin:
     container_name: pgadmin4
     image: dpage/pgadmin4
     restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: elman23@domain.com
-      PGADMIN_DEFAULT_PASSWORD: password
+    env_file:
+      - .env
     ports:
       - "5050:80"

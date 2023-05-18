@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/elman23/articleapi/pkg/db"
 	"github.com/elman23/articleapi/pkg/handlers"
@@ -31,7 +32,12 @@ func handleRequests(DB *sql.DB) {
 }
 
 func main() {
-	DB := db.Connect()
+	user, password, dbname :=
+		os.Getenv("POSTGRES_USER"),
+		os.Getenv("POSTGRES_PASSWORD"),
+		os.Getenv("POSTGRES_DB")
+
+	DB := db.Connect(user, password, dbname)
 	db.CreateTable(DB)
 	handleRequests(DB)
 	db.CloseConnection(DB)

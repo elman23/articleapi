@@ -10,14 +10,12 @@ import (
 )
 
 const (
-	host     = "localhost"
-	port     = 5432
-	user     = "elman23"
-	password = "password"
-	dbname   = "articlesDB"
+	host = "localhost"
+	port = 5432
 )
 
-func Connect() *sql.DB {
+func Connect(user string, password string, dbname string) *sql.DB {
+
 	connInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 
 	db, err := sql.Open("postgres", connInfo)
