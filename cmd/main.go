@@ -32,6 +32,7 @@ func handleRequests(DB *sql.DB) {
 
 func main() {
 	DB := db.Connect()
+	db.CreateTable(DB)
 	handleRequests(DB)
 	db.CloseConnection(DB)
 }
