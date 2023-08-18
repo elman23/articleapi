@@ -1,6 +1,6 @@
 # Article REST API
 
-## Links
+## References
 
 REST API development: https://dev.to/janirefdez/create-a-rest-api-with-go-1j52
 
@@ -10,6 +10,7 @@ Create and connect to PostgreSQL: https://towardsdatascience.com/how-to-run-post
 
 ## Table creation
 
+You can create the database tables with the following SQL script:
 ```
 CREATE TABLE articles (id VARCHAR(36) PRIMARY KEY, title VARCHAR(100) NOT NULL, description VARCHAR(50) NOT NULL, content VARCHAR(50) NOT NULL);
 
@@ -33,7 +34,38 @@ PGADMIN_DEFAULT_PASSWORD=password
 
 ## Run
 
+### Before
+
+You need to create the `.env` file mentioned above.
+
+### Middleware
+
+Start the middleware:
+```
+docker compose -f middleware.yml up -d
+```
+
 Run the program with the command (from the project directory):
 ```
+source .env
 go run cmd/main.go
+```
+
+### Dockerized stack
+
+Provide the `.env` file mentioned above. 
+
+Run the full stack with:
+```
+docker compose -f stack.yml up -d
+```
+
+## Test
+
+Test the API with `curl`.
+```
+curl http://localhost:8080
+curl http://localhost:8080/articles
+curl http://localhost:8080/articles/[PUT_THE_CORRECT_ID_HERE]
+curl -X POST --data '{"Title":"Second","Desc":"Description","Content":"This is the fantastic content."}' --header 'Content-Type: application/json' http://localhost:8080/articles
 ```

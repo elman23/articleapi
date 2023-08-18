@@ -9,14 +9,9 @@ import (
 	_ "github.com/lib/pq"
 )
 
-const (
-	host = "localhost"
-	port = 5432
-)
+func Connect(host string, port string, user string, password string, dbname string) *sql.DB {
 
-func Connect(user string, password string, dbname string) *sql.DB {
-
-	connInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+	connInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 
 	db, err := sql.Open("postgres", connInfo)
 	if err != nil {
