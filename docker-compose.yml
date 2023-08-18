@@ -2,7 +2,7 @@ version: "3.8"
 services:
   database:
     container_name: database
-    image: postgres
+    image: postgres:latest
     ports:
       - "5432:5432"
     volumes:
@@ -11,7 +11,7 @@ services:
       - .env
   pgadmin:
     container_name: pgadmin4
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4:latest
     restart: always
     env_file:
       - .env

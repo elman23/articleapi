@@ -30,3 +30,10 @@ POSTGRES_DB=articlesDB
 PGADMIN_DEFAULT_EMAIL=user@domain.com
 PGADMIN_DEFAULT_PASSWORD=password
 ```
+
+## Run
+
+Run the program with the command (from the project directory):
+```
+go run cmd/main.go
+```
