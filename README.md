@@ -19,6 +19,12 @@ PGADMIN_DEFAULT_PASSWORD=password
 
 ## Middleware
 
+The middleware is composed by the PostgreSQL database and the PgAdmin instance to manage it.
+
+The middleware is provided as a Dockerized stack to be run with Docker compose. The reference file is `middleware.yml` in the `mdl` folder.
+
+### Start the middleware
+
 Start the middleware:
 ```
 docker compose -f middleware.yml up -d
