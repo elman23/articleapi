@@ -2,24 +2,9 @@
 
 ## References
 
-REST API development: https://dev.to/janirefdez/create-a-rest-api-with-go-1j52
-
-Database connection: https://dev.to/janirefdez/connect-rest-api-to-database-with-go-d8m
-
-Create and connect to PostgreSQL: https://towardsdatascience.com/how-to-run-postgresql-and-pgadmin-using-docker-3a6a8ae918b5
-
-## Table creation
-
-You can create the database tables with the following SQL script:
-```
-CREATE TABLE articles (id VARCHAR(36) PRIMARY KEY, title VARCHAR(100) NOT NULL, description VARCHAR(50) NOT NULL, content VARCHAR(50) NOT NULL);
-
-SELECT EXISTS (SELECT FROM pg_tables WHERE  schemaname = 'public' AND tablename = 'articles' );
-
-CREATE TABLE IF NOT EXISTS  articles  (id VARCHAR(36) PRIMARY KEY, title VARCHAR(100) NOT NULL, description VARCHAR(50) NOT NULL, content VARCHAR(50) NOT NULL);
-
-INSERT INTO articles (id,title,description,content) VALUES ('8617bf49-39a9-4268-b113-7b6bcd189ba2', 'Article 1', 'Article Description 1', 'Article Content 1');
-```
+- [REST API development](https://dev.to/janirefdez/create-a-rest-api-with-go-1j52)
+- [Database connection](https://dev.to/janirefdez/connect-rest-api-to-database-with-go-d8m)
+- [Create and connect to PostgreSQL](https://towardsdatascience.com/how-to-run-postgresql-and-pgadmin-using-docker-3a6a8ae918b5)
 
 ## Environment variables
 
@@ -32,18 +17,33 @@ PGADMIN_DEFAULT_EMAIL=user@domain.com
 PGADMIN_DEFAULT_PASSWORD=password
 ```
 
-## Run
-
-### Before
-
-You need to create the `.env` file mentioned above.
-
-### Middleware
+## Middleware
 
 Start the middleware:
 ```
 docker compose -f middleware.yml up -d
 ```
+
+### Table creation
+
+You can create the database tables with the `initial.sql` SQL script in the `sql` directory.
+
+The content of the script is the following (in case you want to run it line by line):
+```
+CREATE TABLE articles (id VARCHAR(36) PRIMARY KEY, title VARCHAR(100) NOT NULL, description VARCHAR(50) NOT NULL, content VARCHAR(50) NOT NULL);
+
+SELECT EXISTS (SELECT FROM pg_tables WHERE  schemaname = 'public' AND tablename = 'articles' );
+
+CREATE TABLE IF NOT EXISTS  articles  (id VARCHAR(36) PRIMARY KEY, title VARCHAR(100) NOT NULL, description VARCHAR(50) NOT NULL, content VARCHAR(50) NOT NULL);
+
+INSERT INTO articles (id,title,description,content) VALUES ('8617bf49-39a9-4268-b113-7b6bcd189ba2', 'Article 1', 'Article Description 1', 'Article Content 1');
+```
+
+## Run
+
+### Before
+
+You need to create the `.env` file mentioned above.
 
 Run the program with the command (from the project directory):
 ```
