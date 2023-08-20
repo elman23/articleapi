@@ -44,14 +44,17 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&creds)
 	if err != nil {
 		// If the structure of the body is wrong, return an HTTP error
+		log.Println("Bad request!")
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "Bad request!")
 		return
 	}
 
 	user, err := singleton.GetService().GetUser(creds.Username)
 	if err != nil {
-		log.Println("Error getting user!")
+		log.Println("Unauthorized!")
 		w.WriteHeader(http.StatusUnauthorized)
+		fmt.Fprintf(w, "Unauthorized!")
 		return
 	}
 
@@ -65,6 +68,7 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 	if expectedPassword != creds.Password {
 		log.Println("Wrong password!")
 		w.WriteHeader(http.StatusUnauthorized)
+		fmt.Fprintf(w, "Wrong password!")
 		return
 	}
 	log.Println("Password control correct.")
@@ -87,7 +91,9 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 	tokenString, err := token.SignedString(jwtKey)
 	if err != nil {
 		// If there is an error in creating the JWT return an internal server error
+		log.Println("Internal server error!")
 		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Internal server error!")
 		return
 	}
 
