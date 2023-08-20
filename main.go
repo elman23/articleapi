@@ -14,11 +14,15 @@ import (
 )
 
 func homePage(w http.ResponseWriter, r *http.Request) {
+	// Printed to the console
+	fmt.Println("Endpoint: [homePage].")
 	// Home page message returned to the ResponseWriter
 	fmt.Fprintf(w, "Welcome to the Article REST API!\nDeveloped with <3")
+}
 
-	// Printed to the console
-	fmt.Println("Article REST API.")
+func welcome(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Endpoint: [welcome]")
+	fmt.Fprintf(w, "Welcome to the home page!")
 }
 
 func handleRequests(DB *sql.DB) {
@@ -38,7 +42,7 @@ func handleRequests(DB *sql.DB) {
 
 	// we will implement these handlers in the next sections
 	myRouter.HandleFunc("/signin", auth.Signin)
-	myRouter.HandleFunc("/welcome", auth.Welcome)
+	myRouter.Handle("/welcome", auth.IsAuthorized(welcome))
 	myRouter.HandleFunc("/refresh", auth.Refresh)
 	myRouter.HandleFunc("/logout", auth.Logout)
 

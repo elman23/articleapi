@@ -9,7 +9,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-var jwtKey = []byte("my_supersecret_key")
+var jwtKey = []byte("my_basdsecret_key")
 
 var users = map[string]string{
 	"user1": "password1",
@@ -31,6 +31,9 @@ type Claims struct {
 
 // Create the Signin handler
 func Signin(w http.ResponseWriter, r *http.Request) {
+
+	fmt.Println("Singing in...")
+
 	var creds Credentials
 	// Get the JSON body and decode into credentials
 	err := json.NewDecoder(r.Body).Decode(&creds)
@@ -82,48 +85,58 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func Welcome(w http.ResponseWriter, r *http.Request) {
-	// We can obtain the session token from the requests cookies, which come with every request
-	c, err := r.Cookie("token")
-	if err != nil {
-		if err == http.ErrNoCookie {
-			// If the cookie is not set, return an unauthorized status
-			w.WriteHeader(http.StatusUnauthorized)
+func IsAuthorized(endpoint func(http.ResponseWriter, *http.Request)) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		fmt.Println("Checking authorization...")
+
+		// We can obtain the session token from the requests cookies, which come with every request
+		c, err := r.Cookie("token")
+		if err != nil {
+			if err == http.ErrNoCookie {
+				// If the cookie is not set, return an unauthorized status
+				w.WriteHeader(http.StatusUnauthorized)
+				return
+			}
+			// For any other type of error, return a bad request status
+			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		// For any other type of error, return a bad request status
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
 
-	// Get the JWT string from the cookie
-	tknStr := c.Value
+		// Get the JWT string from the cookie
+		tknStr := c.Value
 
-	// Initialize a new instance of `Claims`
-	claims := &Claims{}
+		// Initialize a new instance of `Claims`
+		claims := &Claims{}
 
-	// Parse the JWT string and store the result in `claims`.
-	// Note that we are passing the key in this method as well. This method will return an error
-	// if the token is invalid (if it has expired according to the expiry time we set on sign in),
-	// or if the signature does not match
-	tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
-		return jwtKey, nil
+		// Parse the JWT string and store the result in `claims`.
+		// Note that we are passing the key in this method as well. This method will return an error
+		// if the token is invalid (if it has expired according to the expiry time we set on sign in),
+		// or if the signature does not match
+		tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
+			return jwtKey, nil
+		})
+		if err != nil {
+			if err == jwt.ErrSignatureInvalid {
+				fmt.Println("Unauthorized.")
+				w.WriteHeader(http.StatusUnauthorized)
+				fmt.Fprintf(w, "Not authorized!")
+				return
+			}
+			fmt.Println("Bad request.")
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, "Not authorized!")
+			return
+		}
+		if !tkn.Valid {
+			fmt.Println("Invalid authorization token.")
+			w.WriteHeader(http.StatusUnauthorized)
+			fmt.Fprintf(w, "Not authorized!")
+			return
+		}
+		fmt.Println("Authorization verified.")
+		endpoint(w, r)
 	})
-	if err != nil {
-		if err == jwt.ErrSignatureInvalid {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	if !tkn.Valid {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
-	// Finally, return the welcome message to the user, along with their
-	// username given in the token
-	w.Write([]byte(fmt.Sprintf("Welcome %s!", claims.Username)))
 }
 
 func Refresh(w http.ResponseWriter, r *http.Request) {
