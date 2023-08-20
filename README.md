@@ -79,4 +79,4 @@ curl -X POST --data '{"Title":"Second","Desc":"Description","Content":"This is t
 ## ToDo
 
 - [ ] Encrypt user password.
-- [ ] Dependency Injection and Inversion of Control.
+- [ ] Dependency Injection and Inversion of Control (see [here](https://github.com/golobby/container)).
