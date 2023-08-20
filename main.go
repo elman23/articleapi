@@ -34,11 +34,11 @@ func handleRequests(DB *sql.DB) {
 
 	// Add routes and handle functions
 	myRouter.HandleFunc("/", homePage)
-	myRouter.HandleFunc("/articles", h.GetAllArticles).Methods(http.MethodGet)
-	myRouter.HandleFunc("/articles/{id}", h.GetArticle).Methods(http.MethodGet)
-	myRouter.HandleFunc("/articles", h.AddArticle).Methods(http.MethodPost)
-	myRouter.HandleFunc("/articles/{id}", h.UpdateArticle).Methods(http.MethodPut)
-	myRouter.HandleFunc("/articles/{id}", h.DeleteArticle).Methods(http.MethodDelete)
+	myRouter.Handle("/articles", auth.IsAuthorized(h.GetAllArticles)).Methods(http.MethodGet)
+	myRouter.Handle("/articles/{id}", auth.IsAuthorized(h.GetArticle)).Methods(http.MethodGet)
+	myRouter.Handle("/articles", auth.IsAuthorized(h.AddArticle)).Methods(http.MethodPost)
+	myRouter.Handle("/articles/{id}", auth.IsAuthorized(h.UpdateArticle)).Methods(http.MethodPut)
+	myRouter.Handle("/articles/{id}", auth.IsAuthorized(h.DeleteArticle)).Methods(http.MethodDelete)
 
 	// we will implement these handlers in the next sections
 	myRouter.HandleFunc("/signin", auth.Signin)

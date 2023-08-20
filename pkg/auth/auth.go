@@ -9,7 +9,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-var jwtKey = []byte("my_basdsecret_key")
+var jwtKey = []byte("asdasd")
 
 var users = map[string]string{
 	"user1": "password1",
