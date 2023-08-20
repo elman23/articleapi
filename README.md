@@ -75,3 +75,8 @@ curl http://localhost:8080/articles
 curl http://localhost:8080/articles/[PUT_THE_CORRECT_ID_HERE]
 curl -X POST --data '{"Title":"Second","Desc":"Description","Content":"This is the fantastic content."}' --header 'Content-Type: application/json' http://localhost:8080/articles
 ```
+
+## ToDo
+
+- [ ] Encrypt user password.
+- [ ] Dependency Injection and Inversion of Control.
