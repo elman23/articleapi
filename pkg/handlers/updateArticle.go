@@ -11,6 +11,8 @@ import (
 )
 
 func (h handler) UpdateArticle(w http.ResponseWriter, r *http.Request) {
+	log.Println("Endpoint: [UpdateArticle].")
+
 	vars := mux.Vars(r)
 	id := vars["id"]
 

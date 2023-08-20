@@ -9,6 +9,7 @@ import (
 )
 
 func (h handler) GetAllArticles(w http.ResponseWriter, r *http.Request) {
+	log.Println("Endpoint: [GetAllArticles].")
 
 	results, err := h.DB.Query("SELECT * FROM articles;")
 	if err != nil {

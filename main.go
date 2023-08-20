@@ -15,13 +15,13 @@ import (
 
 func homePage(w http.ResponseWriter, r *http.Request) {
 	// Printed to the console
-	fmt.Println("Endpoint: [homePage].")
+	log.Println("Endpoint: [homePage].")
 	// Home page message returned to the ResponseWriter
 	fmt.Fprintf(w, "Welcome to the Article REST API!\nDeveloped with <3")
 }
 
 func welcome(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Endpoint: [welcome]")
+	log.Println("Endpoint: [welcome]")
 	fmt.Fprintf(w, "Welcome to the home page!")
 }
 

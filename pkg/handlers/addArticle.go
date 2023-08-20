@@ -11,6 +11,8 @@ import (
 )
 
 func (h handler) AddArticle(w http.ResponseWriter, r *http.Request) {
+	log.Println("Endpoint: [AddArticle].")
+
 	// Read to request body
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)

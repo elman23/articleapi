@@ -10,6 +10,8 @@ import (
 )
 
 func (h handler) GetArticle(w http.ResponseWriter, r *http.Request) {
+	log.Println("Endpoint: [GetArtcle].")
+
 	vars := mux.Vars(r)
 	id := vars["id"]
 

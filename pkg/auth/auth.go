@@ -3,19 +3,21 @@ package auth
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"time"
 
+	"github.com/elman23/articleapi/pkg/db"
 	"github.com/golang-jwt/jwt/v4"
 )
 
 var jwtKey = []byte(os.Getenv("JWT_SECRET"))
 
-var users = map[string]string{
-	"user1": "password1",
-	"user2": "password2",
-}
+// var users = map[string]string{
+// 	"user1": "password1",
+// 	"user2": "password2",
+// }
 
 // Create a struct to read the username and password from the request body
 type Credentials struct {
@@ -33,7 +35,7 @@ type Claims struct {
 // Create the Signin handler
 func Signin(w http.ResponseWriter, r *http.Request) {
 
-	fmt.Println("Singing in...")
+	log.Println("Singing in...")
 
 	var creds Credentials
 	// Get the JSON body and decode into credentials
@@ -44,16 +46,26 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	user, err := db.GetUser(creds.Username)
+	if err != nil {
+		log.Println("Error getting user!")
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
 	// Get the expected password from our in memory map
-	expectedPassword, ok := users[creds.Username]
+	// expectedPassword, ok := users[creds.Username]
+	expectedPassword := user.Password
 
 	// If a password exists for the given user
 	// AND, if it is the same as the password we received, the we can move ahead
 	// if NOT, then we return an "Unauthorized" status
-	if !ok || expectedPassword != creds.Password {
+	if expectedPassword != creds.Password {
+		log.Println("Wrong password!")
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
+	log.Println("Password control correct.")
 
 	// Declare the expiration time of the token
 	// here, we have kept it as 5 minutes
@@ -89,7 +101,7 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 func IsAuthorized(endpoint func(http.ResponseWriter, *http.Request)) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		fmt.Println("Checking authorization...")
+		log.Println("Checking authorization...")
 
 		// We can obtain the session token from the requests cookies, which come with every request
 		c, err := r.Cookie("token")
@@ -119,23 +131,23 @@ func IsAuthorized(endpoint func(http.ResponseWriter, *http.Request)) http.Handle
 		})
 		if err != nil {
 			if err == jwt.ErrSignatureInvalid {
-				fmt.Println("Unauthorized.")
+				log.Println("Unauthorized.")
 				w.WriteHeader(http.StatusUnauthorized)
 				fmt.Fprintf(w, "Not authorized!")
 				return
 			}
-			fmt.Println("Bad request.")
+			log.Println("Bad request.")
 			w.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(w, "Not authorized!")
 			return
 		}
 		if !tkn.Valid {
-			fmt.Println("Invalid authorization token.")
+			log.Println("Invalid authorization token.")
 			w.WriteHeader(http.StatusUnauthorized)
 			fmt.Fprintf(w, "Not authorized!")
 			return
 		}
-		fmt.Println("Authorization verified.")
+		log.Println("Authorization verified.")
 		endpoint(w, r)
 	})
 }

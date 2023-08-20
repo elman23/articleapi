@@ -9,6 +9,8 @@ import (
 )
 
 func (h handler) DeleteArticle(w http.ResponseWriter, r *http.Request) {
+	log.Println("Endpoint: [DeleteArticle].")
+
 	vars := mux.Vars(r)
 	id := vars["id"]
 
