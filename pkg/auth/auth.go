@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 )
 
-var jwtKey = []byte("asdasd")
+var jwtKey = []byte(os.Getenv("JWT_SECRET"))
 
 var users = map[string]string{
 	"user1": "password1",
