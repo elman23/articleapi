@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/elman23/articleapi/pkg/auth"
 	"github.com/elman23/articleapi/pkg/db"
 	"github.com/elman23/articleapi/pkg/handlers"
 	"github.com/gorilla/mux"
@@ -34,6 +35,12 @@ func handleRequests(DB *sql.DB) {
 	myRouter.HandleFunc("/articles", h.AddArticle).Methods(http.MethodPost)
 	myRouter.HandleFunc("/articles/{id}", h.UpdateArticle).Methods(http.MethodPut)
 	myRouter.HandleFunc("/articles/{id}", h.DeleteArticle).Methods(http.MethodDelete)
+
+	// we will implement these handlers in the next sections
+	myRouter.HandleFunc("/signin", auth.Signin)
+	myRouter.HandleFunc("/welcome", auth.Welcome)
+	myRouter.HandleFunc("/refresh", auth.Refresh)
+	myRouter.HandleFunc("/logout", auth.Logout)
 
 	// Log application startup
 	log.Fatal(http.ListenAndServe(":8080", myRouter))
