@@ -159,40 +159,66 @@ func IsAuthorized(endpoint func(http.ResponseWriter, *http.Request)) http.Handle
 }
 
 func Refresh(w http.ResponseWriter, r *http.Request) {
-	// (BEGIN) The code until this point is the same as the first part of the `Welcome` route
+
+	log.Println("Trying to refresh token...")
+
+	// (BEGIN) Same code as in `IsAuthorized`
 	c, err := r.Cookie("token")
 	if err != nil {
 		if err == http.ErrNoCookie {
+			// If the cookie is not set, return an unauthorized status
+			log.Println("Unauthorized.")
 			w.WriteHeader(http.StatusUnauthorized)
+			fmt.Fprintf(w, "Not authorized!")
 			return
 		}
+		// For any other type of error, return a bad request status
+		log.Println("Bad request.")
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "Bad request!")
 		return
 	}
+
+	// Get the JWT string from the cookie
 	tknStr := c.Value
+
+	// Initialize a new instance of `Claims`
 	claims := &Claims{}
+
+	// Parse the JWT string and store the result in `claims`.
+	// Note that we are passing the key in this method as well. This method will return an error
+	// if the token is invalid (if it has expired according to the expiry time we set on sign in),
+	// or if the signature does not match
 	tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
 		return jwtKey, nil
 	})
 	if err != nil {
 		if err == jwt.ErrSignatureInvalid {
+			log.Println("Unauthorized.")
 			w.WriteHeader(http.StatusUnauthorized)
+			fmt.Fprintf(w, "Not authorized!")
 			return
 		}
+		log.Println("Bad request.")
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "Bad request!")
 		return
 	}
 	if !tkn.Valid {
+		log.Println("Invalid authorization token.")
 		w.WriteHeader(http.StatusUnauthorized)
+		fmt.Fprintf(w, "Not authorized!")
 		return
 	}
-	// (END) The code until this point is the same as the first part of the `Welcome` route
+	// (END) Same code as in `IsAuthorized`
 
 	// We ensure that a new token is not issued until enough time has elapsed
 	// In this case, a new token will only be issued if the old token is within
 	// 30 seconds of expiry. Otherwise, return a bad request status
 	if time.Until(claims.ExpiresAt.Time) > 30*time.Second {
+		log.Println("Old authorization token still valid for more than 30 seconds.")
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "Old authorization token still valid for more than 30 seconds.")
 		return
 	}
 
@@ -202,7 +228,9 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := token.SignedString(jwtKey)
 	if err != nil {
+		log.Println("Internal server error.")
 		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Internal server error.")
 		return
 	}
 

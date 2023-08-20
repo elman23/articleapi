@@ -25,12 +25,18 @@ func welcome(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleRequests(DB *sql.DB) {
-	// Database requests handler
-	h := handlers.New(DB)
 
 	// Create a new instance of the mux router
 	myRouter := mux.NewRouter().StrictSlash(true)
 
+	// we will implement these handlers in the next sections
+	myRouter.HandleFunc("/signin", auth.Signin).Methods(http.MethodPost)
+	myRouter.Handle("/welcome", auth.IsAuthorized(welcome)).Methods(http.MethodGet)
+	myRouter.Handle("/refresh", auth.IsAuthorized(auth.Refresh)).Methods(http.MethodGet)
+	myRouter.HandleFunc("/logout", auth.Logout).Methods(http.MethodGet)
+
+	// Database requests handler
+	h := handlers.New(DB)
 	// Add routes and handle functions
 	myRouter.HandleFunc("/", homePage)
 	myRouter.Handle("/articles", auth.IsAuthorized(h.GetAllArticles)).Methods(http.MethodGet)
@@ -38,12 +44,6 @@ func handleRequests(DB *sql.DB) {
 	myRouter.Handle("/articles", auth.IsAuthorized(h.AddArticle)).Methods(http.MethodPost)
 	myRouter.Handle("/articles/{id}", auth.IsAuthorized(h.UpdateArticle)).Methods(http.MethodPut)
 	myRouter.Handle("/articles/{id}", auth.IsAuthorized(h.DeleteArticle)).Methods(http.MethodDelete)
-
-	// we will implement these handlers in the next sections
-	myRouter.HandleFunc("/signin", auth.Signin)
-	myRouter.Handle("/welcome", auth.IsAuthorized(welcome))
-	myRouter.HandleFunc("/refresh", auth.Refresh)
-	myRouter.HandleFunc("/logout", auth.Logout)
 
 	// Log application startup
 	log.Fatal(http.ListenAndServe(":8080", myRouter))
