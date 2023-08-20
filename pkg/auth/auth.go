@@ -71,7 +71,8 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Wrong password!")
 		return
 	}
-	log.Println("Password control correct.")
+	log.Println("Signed in.")
+	fmt.Fprintf(w, "Signed in!")
 
 	// Declare the expiration time of the token
 	// here, we have kept it as 5 minutes
