@@ -63,7 +63,7 @@ func main() {
 	DB := db.Connect(url, port, user, password, dbname)
 
 	// Create the necessary tables in the database
-	db.CreateTable(DB)
+	db.CreateTables(DB)
 
 	// Handle requests
 	handleRequests(DB)
