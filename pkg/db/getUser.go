@@ -2,29 +2,15 @@ package db
 
 import (
 	"log"
-	"os"
 
-	"github.com/elman23/articleapi/pkg/handlers"
 	"github.com/elman23/articleapi/pkg/models"
 )
 
-func GetUser(username string) (models.User, error) {
+func (s *DbService) GetUser(username string) (models.User, error) {
 	log.Println("Query: [GetUser].")
 
-	// Retreive database connection information from enviroment variables
-	url, port, dbuser, password, dbname :=
-		os.Getenv("POSTGRES_URL"),
-		os.Getenv("POSTGRES_PORT"),
-		os.Getenv("POSTGRES_USER"),
-		os.Getenv("POSTGRES_PASSWORD"),
-		os.Getenv("POSTGRES_DB")
-
-	// Connect to the database
-	DB := Connect(url, port, dbuser, password, dbname)
-	h := handlers.New(DB)
-
 	queryStmt := `SELECT * FROM users WHERE username = $1 ;`
-	results, err := h.DB.Query(queryStmt, username)
+	results, err := s.DB.Query(queryStmt, username)
 	if err != nil {
 		log.Println("Failed to execute query!", err)
 		// w.WriteHeader(500)
@@ -40,9 +26,6 @@ func GetUser(username string) (models.User, error) {
 			return models.User{}, err
 		}
 	}
-
-	CloseConnection(DB)
-	log.Println("DB connection closed!")
 
 	return user, nil
 }

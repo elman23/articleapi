@@ -12,6 +12,8 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
+var singleton db.DbServiceSingleton
+
 var jwtKey = []byte(os.Getenv("JWT_SECRET"))
 
 // var users = map[string]string{
@@ -46,7 +48,7 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := db.GetUser(creds.Username)
+	user, err := singleton.GetService().GetUser(creds.Username)
 	if err != nil {
 		log.Println("Error getting user!")
 		w.WriteHeader(http.StatusUnauthorized)
@@ -108,11 +110,15 @@ func IsAuthorized(endpoint func(http.ResponseWriter, *http.Request)) http.Handle
 		if err != nil {
 			if err == http.ErrNoCookie {
 				// If the cookie is not set, return an unauthorized status
+				log.Println("Unauthorized.")
 				w.WriteHeader(http.StatusUnauthorized)
+				fmt.Fprintf(w, "Not authorized!")
 				return
 			}
 			// For any other type of error, return a bad request status
+			log.Println("Bad request.")
 			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, "Bad request!")
 			return
 		}
 
@@ -138,7 +144,7 @@ func IsAuthorized(endpoint func(http.ResponseWriter, *http.Request)) http.Handle
 			}
 			log.Println("Bad request.")
 			w.WriteHeader(http.StatusBadRequest)
-			fmt.Fprintf(w, "Not authorized!")
+			fmt.Fprintf(w, "Bad request!")
 			return
 		}
 		if !tkn.Valid {

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/elman23/articleapi/pkg/auth"
 	"github.com/elman23/articleapi/pkg/db"
@@ -51,23 +50,12 @@ func handleRequests(DB *sql.DB) {
 }
 
 func main() {
-	// Retreive database connection information from enviroment variables
-	url, port, user, password, dbname :=
-		os.Getenv("POSTGRES_URL"),
-		os.Getenv("POSTGRES_PORT"),
-		os.Getenv("POSTGRES_USER"),
-		os.Getenv("POSTGRES_PASSWORD"),
-		os.Getenv("POSTGRES_DB")
-
-	// Connect to the database
-	DB := db.Connect(url, port, user, password, dbname)
-
-	// Create the necessary tables in the database
-	db.CreateTables(DB)
+	var singleton db.DbServiceSingleton
+	dbService := singleton.GetService()
 
 	// Handle requests
-	handleRequests(DB)
+	handleRequests(dbService.DB)
 
 	// Close database connection
-	db.CloseConnection(DB)
+	singleton.CloseConnection()
 }

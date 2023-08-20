@@ -4,12 +4,55 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/elman23/articleapi/pkg/mocks"
 	_ "github.com/lib/pq"
 )
 
-func Connect(host string, port string, user string, password string, dbname string) *sql.DB {
+type DbServiceSingleton struct {
+	dbService *DbService
+}
+
+func (s *DbServiceSingleton) GetService() *DbService {
+	if s.dbService == nil {
+		s.dbService = newDbService()
+	}
+	return s.dbService
+}
+
+type DbService struct {
+	DB *sql.DB
+}
+
+func newDbService() *DbService {
+
+	dbService := DbService{}
+	// Retreive database connection information from enviroment variables
+	url, port, user, password, dbname :=
+		os.Getenv("POSTGRES_URL"),
+		os.Getenv("POSTGRES_PORT"),
+		os.Getenv("POSTGRES_USER"),
+		os.Getenv("POSTGRES_PASSWORD"),
+		os.Getenv("POSTGRES_DB")
+
+	// Connect to the database
+	dbService.DB = dbService.connect(url, port, user, password, dbname)
+
+	// Create the necessary tables in the database
+	dbService.createTables(dbService.DB)
+
+	return &dbService
+}
+
+func (s *DbServiceSingleton) CloseConnection() {
+	// Get the service
+	singleton := s.GetService()
+	// Close database connection
+	defer singleton.DB.Close()
+}
+
+func (s *DbService) connect(host string, port string, user string, password string, dbname string) *sql.DB {
 
 	connInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 
@@ -25,16 +68,12 @@ func Connect(host string, port string, user string, password string, dbname stri
 	return db
 }
 
-func CloseConnection(db *sql.DB) {
-	defer db.Close()
+func (s *DbService) createTables(db *sql.DB) {
+	s.createUsersTable(db)
+	s.createArticlesTable(db)
 }
 
-func CreateTables(db *sql.DB) {
-	createUsersTable(db)
-	createArticlesTable(db)
-}
-
-func createArticlesTable(db *sql.DB) {
+func (s *DbService) createArticlesTable(db *sql.DB) {
 	var exists bool
 	if err := db.QueryRow("SELECT EXISTS (SELECT FROM pg_tables WHERE  schemaname = 'public' AND tablename = 'articles' );").Scan(&exists); err != nil {
 		log.Println("Failed to execute query!", err)
@@ -64,7 +103,7 @@ func createArticlesTable(db *sql.DB) {
 	}
 }
 
-func createUsersTable(db *sql.DB) {
+func (s *DbService) createUsersTable(db *sql.DB) {
 	var exists bool
 	if err := db.QueryRow("SELECT EXISTS (SELECT FROM pg_tables WHERE  schemaname = 'public' AND tablename = 'users' );").Scan(&exists); err != nil {
 		log.Println("Failed to execute query!", err)
