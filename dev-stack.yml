@@ -10,6 +10,14 @@ services:
       - database:/var/lib/postgresql/data
     env_file:
       - .env
+  pgadmin:
+    container_name: pgadmin4
+    image: dpage/pgadmin4:latest
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "5050:80"
   articleapi:
     container_name: articleapi
     build:

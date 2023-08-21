@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/elman23/articleapi/pkg/hashing"
 	"github.com/elman23/articleapi/pkg/mocks"
 	_ "github.com/lib/pq"
 )
@@ -81,7 +82,7 @@ func (s *DbService) createArticlesTable(db *sql.DB) {
 	}
 	if !exists {
 		// Create the 'articles' table.
-		results, err := db.Query("CREATE TABLE articles (id VARCHAR(36) PRIMARY KEY, title VARCHAR(100) NOT NULL, description VARCHAR(50) NOT NULL, content VARCHAR(50) NOT NULL);")
+		results, err := db.Query("CREATE TABLE articles (id VARCHAR(36) PRIMARY KEY, title VARCHAR(100) NOT NULL, description VARCHAR(100) NOT NULL, content VARCHAR(250) NOT NULL);")
 		if err != nil {
 			log.Println("Failed to create 'articles' table!", err)
 			return
@@ -111,7 +112,7 @@ func (s *DbService) createUsersTable(db *sql.DB) {
 	}
 	if !exists {
 		// Create the 'users' table.
-		results, err := db.Query("CREATE TABLE users (id VARCHAR(36) PRIMARY KEY, username VARCHAR(50) NOT NULL, password VARCHAR(50) NOT NULL);")
+		results, err := db.Query("CREATE TABLE users (id VARCHAR(36) PRIMARY KEY, username VARCHAR(50) NOT NULL, password VARCHAR(100) NOT NULL);")
 		if err != nil {
 			log.Println("Failed to create 'users' table!", err)
 			return
@@ -121,7 +122,13 @@ func (s *DbService) createUsersTable(db *sql.DB) {
 		for _, user := range mocks.Users {
 			queryStmt := `INSERT INTO users (id,username,password) VALUES ($1, $2, $3) RETURNING id;`
 
-			err := db.QueryRow(queryStmt, &user.Id, &user.Username, &user.Password).Scan(&user.Id)
+			passwordHash, err := hashing.HashPassword(user.Password)
+			if err != nil {
+				log.Println("Error hashing password!")
+				return
+			}
+
+			err = db.QueryRow(queryStmt, &user.Id, &user.Username, &passwordHash).Scan(&user.Id)
 			if err != nil {
 				log.Println("Failed to insert default user in table!", err)
 				return

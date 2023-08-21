@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/elman23/articleapi/pkg/db"
+	"github.com/elman23/articleapi/pkg/hashing"
 	"github.com/golang-jwt/jwt/v4"
 )
 
@@ -65,13 +66,14 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 	// If a password exists for the given user
 	// AND, if it is the same as the password we received, the we can move ahead
 	// if NOT, then we return an "Unauthorized" status
-	if expectedPassword != creds.Password {
+	if !hashing.CheckPasswordHash(creds.Password, expectedPassword) {
+		// if expectedPassword != creds.Password {
 		log.Println("Wrong password!")
 		w.WriteHeader(http.StatusUnauthorized)
 		fmt.Fprintf(w, "Wrong password!")
 		return
 	}
-	log.Println("Signed in.")
+	log.Println("Signed in!")
 	fmt.Fprintf(w, "Signed in!")
 
 	// Declare the expiration time of the token
@@ -105,6 +107,10 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 		Value:   tokenString,
 		Expires: expirationTime,
 	})
+	log.Println("Cookie set!")
+	log.Println(w.Header())
+	log.Println(tokenString)
+	log.Println(expirationTime)
 }
 
 func IsAuthorized(endpoint func(http.ResponseWriter, *http.Request)) http.Handler {
@@ -255,4 +261,6 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 		Name:    "token",
 		Expires: time.Now(),
 	})
+	log.Println("Signed out!")
+	fmt.Fprintf(w, "Signed out!")
 }

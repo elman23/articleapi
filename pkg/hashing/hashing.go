@@ -4,18 +4,12 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// Hash password
 func HashPassword(password string) (string, error) {
-	// Convert password string to byte slice
-	var passwordBytes = []byte(password)
-	// Hash password with Bcrypt's min cost
-	hashedPasswordBytes, err := bcrypt.GenerateFromPassword(passwordBytes, bcrypt.MinCost)
-	return string(hashedPasswordBytes), err
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
 }
 
-// Check if two passwords match using Bcrypt's CompareHashAndPassword
-// which return nil on success and an error on failure.
-func DoPasswordsMatch(hashedPassword string, currPassword string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(currPassword))
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
 }
