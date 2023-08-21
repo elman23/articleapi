@@ -252,6 +252,10 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 		Value:   tokenString,
 		Expires: expirationTime,
 	})
+	//log.Println("Header:", w.Header())
+
+	log.Println("Cookie refreshed!")
+	fmt.Fprintf(w, "Cookie refreshed!")
 }
 
 func Logout(w http.ResponseWriter, r *http.Request) {
