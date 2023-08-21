@@ -73,8 +73,7 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Wrong password!")
 		return
 	}
-	log.Println("Signed in!")
-	fmt.Fprintf(w, "Signed in!")
+	log.Println("Password correctly verified.")
 
 	// Declare the expiration time of the token
 	// here, we have kept it as 5 minutes
@@ -107,6 +106,10 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 		Value:   tokenString,
 		Expires: expirationTime,
 	})
+	//log.Println("Header:", w.Header())
+
+	log.Println("Signed in!")
+	fmt.Fprintf(w, "Signed in!")
 }
 
 func IsAuthorized(endpoint func(http.ResponseWriter, *http.Request)) http.Handler {
