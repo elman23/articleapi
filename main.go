@@ -45,6 +45,8 @@ func handleRequests(DB *sql.DB) {
 	myRouter.Handle("/articles/{id}", auth.IsAuthorized(h.UpdateArticle)).Methods(http.MethodPut)
 	myRouter.Handle("/articles/{id}", auth.IsAuthorized(h.DeleteArticle)).Methods(http.MethodDelete)
 
+	myRouter.Handle("/users", auth.IsAuthorized(h.AddUser)).Methods(http.MethodPost)
+
 	// Log application startup
 	log.Fatal(http.ListenAndServe(":8080", myRouter))
 }
