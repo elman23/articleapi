@@ -78,5 +78,9 @@ curl -X POST --data '{"Title":"Second","Desc":"Description","Content":"This is t
 
 ## ToDo
 
-- [ ] Encrypt user password.
+- [X] Authentication (password + JWT).
+- [X] Hash user password in database.
 - [ ] Dependency Injection and Inversion of Control (see [here](https://github.com/golobby/container)).
+- [ ] Separate queries from endpoints.
+- [ ] User management.
+- [ ] Authorizations.
