@@ -18,6 +18,8 @@ services:
       - .env
     ports:
       - "5050:80"
+    volumes:
+      - pgadmin:/var/lib/pgadmin
   articleapi:
     container_name: articleapi
     build:
@@ -31,3 +33,4 @@ services:
 
 volumes:
   database:
+  pgadmin:
