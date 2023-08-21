@@ -107,10 +107,6 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 		Value:   tokenString,
 		Expires: expirationTime,
 	})
-	log.Println("Cookie set!")
-	log.Println(w.Header())
-	log.Println(tokenString)
-	log.Println(expirationTime)
 }
 
 func IsAuthorized(endpoint func(http.ResponseWriter, *http.Request)) http.Handler {
