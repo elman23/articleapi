@@ -18,9 +18,11 @@ services:
       - .env
     ports:
       - "5050:80"
+    volumes:
+      - pgadmin:/var/lib/pgadmin
   articleapi:
     container_name: articleapi
-    image: articleapi
+    image: articleapi:latest
     restart: always
     env_file:
       - .env
@@ -29,3 +31,4 @@ services:
 
 volumes:
   database:
+  pgadmin:
