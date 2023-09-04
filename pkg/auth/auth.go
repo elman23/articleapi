@@ -35,6 +35,10 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
+type Token struct {
+	Token string `json:"token"`
+}
+
 // Create the Signin handler
 func Signin(w http.ResponseWriter, r *http.Request) {
 
@@ -108,8 +112,10 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 	})
 	//log.Println("Header:", w.Header())
 
+	w.Header().Add("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(Token{Token: tokenString})
 	log.Println("Signed in!")
-	fmt.Fprintf(w, "Signed in!")
+	//fmt.Fprintf(w, "Signed in!")
 }
 
 func IsAuthorized(endpoint func(http.ResponseWriter, *http.Request)) http.Handler {
@@ -254,8 +260,10 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 	})
 	//log.Println("Header:", w.Header())
 
+	w.Header().Add("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(Token{Token: tokenString})
 	log.Println("Cookie refreshed!")
-	fmt.Fprintf(w, "Cookie refreshed!")
+	// fmt.Fprintf(w, "Cookie refreshed!")
 }
 
 func Logout(w http.ResponseWriter, r *http.Request) {
