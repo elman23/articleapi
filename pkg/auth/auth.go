@@ -39,6 +39,10 @@ type Token struct {
 	Token string `json:"token"`
 }
 
+type HttpMessage struct {
+    Message string `json:"message"`
+}
+
 // Create the Signin handler
 func Signin(w http.ResponseWriter, r *http.Request) {
 
@@ -51,7 +55,8 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 		// If the structure of the body is wrong, return an HTTP error
 		log.Println("Bad request!")
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, "Bad request!")
+		//fmt.Fprintf(w, "Bad request!")
+		json.NewEncoder(w).Encode(HttpMessage{Message: "Bad request!"})
 		return
 	}
 
@@ -59,7 +64,8 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println("Unauthorized!")
 		w.WriteHeader(http.StatusUnauthorized)
-		fmt.Fprintf(w, "Unauthorized!")
+		//fmt.Fprintf(w, "Unauthorized!")
+		json.NewEncoder(w).Encode(HttpMessage{Message: "Unauthorized!"})
 		return
 	}
 
@@ -74,7 +80,8 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 		// if expectedPassword != creds.Password {
 		log.Println("Wrong password!")
 		w.WriteHeader(http.StatusUnauthorized)
-		fmt.Fprintf(w, "Wrong password!")
+		//fmt.Fprintf(w, "Wrong password!")
+		json.NewEncoder(w).Encode(HttpMessage{Message: "Wrong password!"})
 		return
 	}
 	log.Println("Password correctly verified.")
@@ -99,7 +106,8 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 		// If there is an error in creating the JWT return an internal server error
 		log.Println("Internal server error!")
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(w, "Internal server error!")
+		//fmt.Fprintf(w, "Internal server error!")
+		json.NewEncoder(w).Encode(HttpMessage{Message: "Internal server error!"})
 		return
 	}
 
@@ -130,13 +138,15 @@ func IsAuthorized(endpoint func(http.ResponseWriter, *http.Request)) http.Handle
 				// If the cookie is not set, return an unauthorized status
 				log.Println("Unauthorized.")
 				w.WriteHeader(http.StatusUnauthorized)
-				fmt.Fprintf(w, "Not authorized!")
+				//fmt.Fprintf(w, "Not authorized!")
+				json.NewEncoder(w).Encode(HttpMessage{Message: "Unauthorized!"})
 				return
 			}
 			// For any other type of error, return a bad request status
 			log.Println("Bad request.")
 			w.WriteHeader(http.StatusBadRequest)
-			fmt.Fprintf(w, "Bad request!")
+			//fmt.Fprintf(w, "Bad request!")
+			json.NewEncoder(w).Encode(HttpMessage{Message: "Bad request!"})
 			return
 		}
 
@@ -157,18 +167,21 @@ func IsAuthorized(endpoint func(http.ResponseWriter, *http.Request)) http.Handle
 			if err == jwt.ErrSignatureInvalid {
 				log.Println("Unauthorized.")
 				w.WriteHeader(http.StatusUnauthorized)
-				fmt.Fprintf(w, "Not authorized!")
+				//fmt.Fprintf(w, "Not authorized!")
+				json.NewEncoder(w).Encode(HttpMessage{Message: "Unauthorized!"})
 				return
 			}
 			log.Println("Bad request.")
 			w.WriteHeader(http.StatusBadRequest)
-			fmt.Fprintf(w, "Bad request!")
+			//fmt.Fprintf(w, "Bad request!")
+			json.NewEncoder(w).Encode(HttpMessage{Message: "Bad request!"})
 			return
 		}
 		if !tkn.Valid {
 			log.Println("Invalid authorization token.")
 			w.WriteHeader(http.StatusUnauthorized)
-			fmt.Fprintf(w, "Not authorized!")
+			//fmt.Fprintf(w, "Not authorized!")
+			json.NewEncoder(w).Encode(HttpMessage{Message: "Unauthorized!"})
 			return
 		}
 		log.Println("Authorization verified.")
