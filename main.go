@@ -30,7 +30,7 @@ func handleRequests(DB *sql.DB) {
 	myRouter := mux.NewRouter().StrictSlash(true)
 
 	// we will implement these handlers in the next sections
-	myRouter.HandleFunc("/signin", auth.Signin).Methods(http.MethodPost)
+	myRouter.HandleFunc("/login", auth.Signin).Methods(http.MethodPost)
 	myRouter.Handle("/welcome", auth.IsAuthorized(welcome)).Methods(http.MethodGet)
 	myRouter.Handle("/refresh", auth.IsAuthorized(auth.Refresh)).Methods(http.MethodGet)
 	myRouter.HandleFunc("/logout", auth.Logout).Methods(http.MethodGet)
