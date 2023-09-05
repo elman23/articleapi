@@ -1,6 +1,14 @@
 version: "3.8"
 
 services:
+  proxy:
+    container_name: proxy
+    build:
+      context: ./proxy
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "80:80"
   database:
     container_name: database
     image: postgres:latest
